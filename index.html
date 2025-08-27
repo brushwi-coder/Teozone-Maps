@@ -3,32 +3,34 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Label-free Fullscreen Map</title>
+  <title>TEOZONE Styled OSM Map</title>
 
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
-    html, body { height: 100%; margin: 0; }
-    #map { width: 100vw; height: 100vh; } /* 화면 꽉 채우기 */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // 지도 생성 (줌 버튼도 숨김)
     const map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 16);
 
-    // ✅ 라벨(지명/건물명) 없는 타일
-    // CARTO 'light_nolabels' 타일: OSM 데이터 기반, 텍스트 레이블 제거
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
       subdomains: 'abcd',
-      maxZoom: 20,
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+      maxZoom: 20
     }).addTo(map);
+
   </script>
 </body>
 </html>
