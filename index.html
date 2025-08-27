@@ -2,23 +2,33 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <title>TEOZONE 카카오맵</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Label-free Fullscreen Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
-    #map {width:100%; height:80vh; max-width:960px; margin:24px auto;}
+    html, body { height: 100%; margin: 0; }
+    #map { width: 100vw; height: 100vh; } /* 화면 꽉 채우기 */
   </style>
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0cabb3e58c84dc899124a631ea6ed8ae&autoload=false"></script>
 </head>
 <body>
-  <h1 style="text-align:center">TEOZONE 카카오맵</h1>
   <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    kakao.maps.load(function() {
-      const map = new kakao.maps.Map(document.getElementById('map'), {
-        center: new kakao.maps.LatLng(37.5665, 126.9780),
-        level: 3
-      });
-      new kakao.maps.Marker({ position: map.getCenter(), map });
-    });
+    // 지도 생성 (줌 버튼도 숨김)
+    const map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 16);
+
+    // ✅ 라벨(지명/건물명) 없는 타일
+    // CARTO 'light_nolabels' 타일: OSM 데이터 기반, 텍스트 레이블 제거
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(map);
   </script>
 </body>
 </html>
