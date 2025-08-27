@@ -3,14 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TEOZONE OSM Custom Style</title>
+  <title>TEOZONE OSM Custom Map</title>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
-    html, body { height: 100%; margin: 0; }
-    #map { width: 100vw; height: 100vh; }
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
   </style>
 </head>
 <body>
@@ -22,10 +28,11 @@
     // 지도 생성
     const map = L.map('map', { zoomControl: false }).setView([37.3794, 126.6530], 15);
 
-    // ✅ 스타일 적용된 OSM 타일 사용
-    L.tileLayer('https://api.maptiler.com/maps/pastel/{z}/{x}/{y}.png?key=YOUR_API_KEY', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>',
-      maxZoom: 20
+    // ✅ Carto Light - 라벨 없는 기본 타일 (API Key 불필요)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(map);
   </script>
 </body>
