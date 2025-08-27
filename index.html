@@ -3,47 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TEOZONE • VWorld Label-free Map</title>
+  <title>TEOZONE • OSM Vector (No Labels)</title>
 
+  <!-- MapLibre GL -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css">
   <style>
-    html, body { height: 100%; margin: 0; }
-    #map { width: 100vw; height: 100vh; }  /* 화면 꽉 채우기 */
+    html, body { height:100%; margin:0; }
+    #map { width:100vw; height:100vh; }
   </style>
-
-  <!-- VWorld JS (동휘님 키 그대로 사용) -->
-  <script type="text/javascript"
-    src="https://map.vworld.kr/js/vworldMapInit.js.do?version=2.0&apiKey=62AE115E-D568-333B-91C0-F784EE2D38B9">
-  </script>
 </head>
 <body>
   <div id="map"></div>
 
+  <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <script>
-    // 라벨 최소화: WHITE 또는 GRAY 베이스맵 사용 (HYBRID/BASE는 라벨이 더 보일 수 있음)
-    const options = {
-      basemapType: vw.ol3.BasemapType.WHITE,           // WHITE, GRAY, MIDNIGHT, SATELLITE 등
-      controlDensity: vw.ol3.DensityType.EMPTY,        // 줌/스케일 등 UI 제거
-      interactionDensity: vw.ol3.DensityType.BASIC,    // 마우스 드래그/휠만
-      controlsAutoArrange: true,
-      // 초기 위치(선택): 위도/경도로 지정하고 싶다면 아래처럼 setCenterLatLng 사용
-      initPosition: vw.ol3.CameraPosition               // 기본 카메라(대한민국 전역)
-    };
+    const MAPTILER_KEY = 'YOUR_MAPTILER_KEY'; // ← 네 키로 교체
 
-    // 지도 생성
-    const vmap = new vw.ol3.Map("map", options);
+    // style.json 불러와서: ① 키 주입 ② 라벨 레이어 제거 ③ 맵 로드
+    fetch('./style.json').then(r => r.json()).then(style => {
+      // ① {key} 자리에는 실제 키를 주입
+      if (style.sources?.openmaptiles?.url) {
+        style.sources.openmaptiles.url =
+          style.sources.openmaptiles.url.replace('WacMh78SKwta6Z7sPbId', MAPTILER_KEY);
+      }
+      if (typeof style.glyphs === 'string') {
+        style.glyphs = style.glyphs.replace('{key}', MAPTILER_KEY);
+      }
 
-    // 원하면 특정 좌표로 이동 (위/경도, 줌레벨)
-    // vmap.setCenterLatLng(37.5665, 126.9780); // 서울시청
-    // vmap.setZoom(16);
+      // ② 라벨 없애기: symbol 타입/라벨성 레이어 전부 제거
+      style.layers = style.layers.filter(l => {
+        if (l.type === 'symbol') return false; // 모든 텍스트/아이콘
+        const id = (l.id || '').toLowerCase();
+        // 혹시 symbol 아닌데 이름이 라벨 성격이면 제거
+        return !/(label|name|housenumber|transportation_name)/.test(id);
+      });
 
-    // 안전장치: 라벨 오버레이가 섞였을 경우 제거
-    // (일부 예제에서 HYBRID를 추가하면 라벨 레이어가 올라오므로 제거해 둡니다)
-    try {
-      const layers = vmap.getLayers().getArray();
-      layers
-        .filter(l => (l.get('id') || '').toString().toLowerCase().includes('label'))
-        .forEach(l => vmap.removeLayer(l));
-    } catch (e) { /* 조용히 무시 */ }
+      // ③ 맵 생성 (UI 최소화)
+      const map = new maplibregl.Map({
+        container: 'map',
+        style,
+        center: [126.9780, 37.5665], // 서울시청
+        zoom: 14,
+        attributionControl: true
+      });
+
+      // 기본 내비게이션 버튼도 빼고 싶으면 아래 주석 해제 X (지금은 미추가)
+      // map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    });
   </script>
 </body>
 </html>
